@@ -29,30 +29,29 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 # Class to define RiskType which will nest RiskTypeField
 
 
-class risktype(models.Model):
+class RiskType(models.Model):
     createdby = models.ForeignKey(
         User, related_name='user_risktypes', on_delete=models.CASCADE,
         null=True, blank=True)
     risk_type_name = models.CharField(max_length=100, unique=True,
                                       error_messages={
-                                          'unique': 'risk_type_name must be \
-                                           unique'
+                                          'unique': 'risk_type_name must be unique'
                                       })
     risk_type_description = models.CharField(
         max_length=100, blank=True, default='')
 
     def get_RiskTypeFields(self):
-        risktypefields = risktypefield.objects.filter(risktype=self)
+        risktypefields = RiskTypeField.objects.filter(risktype=self)
         return risktypefields
 
 # Class to define RiskTypeField
 
 
-class risktypefield(models.Model):
+class RiskTypeField(models.Model):
     """ risk_type_field_name = models.CharField(max_length=100,unique=True,
             error_messages={
                 'unique': 'risk_type_field_name must be unique within and
-                  across risk Types'
+                  across Risk Types'
             }) """
     risk_type_field_name = models.CharField(max_length=100)
     # risk_type_field_enum = EnumChoiceField(enum_class=RiskFieldTypeEnum ,
@@ -62,13 +61,13 @@ class risktypefield(models.Model):
     risk_type_field_description = models.CharField(
         max_length=100, blank=True, default='')
     risktype = models.ForeignKey(
-        risktype, related_name='risktype_risktypefields',
+        RiskType, related_name='risktype_risktypefields',
         on_delete=models.CASCADE, null=True, blank=True)
 
 # Class to define Risk which will nest RiskField
 
 
-class risk(models.Model):
+class Risk(models.Model):
     createdby = models.ForeignKey(
         User, related_name='user_risks', on_delete=models.CASCADE, null=True,
         blank=True)
@@ -78,7 +77,7 @@ class risk(models.Model):
                                  })
     risk_description = models.CharField(max_length=100, blank=True, default='')
     risktype = models.ForeignKey(
-        risktype, on_delete=models.CASCADE, null=True, blank=True)
+        RiskType, on_delete=models.CASCADE, null=True, blank=True)
 
     @property
     def risk_type_id(self):
@@ -91,13 +90,13 @@ class risk(models.Model):
 # Class to define RiskField
 
 
-class riskfield(models.Model):
+class RiskField(models.Model):
     risk_field_value = models.CharField(max_length=100, blank=True, default='')
     # Field is of type risktypefield
 
     risktypefield = models.ForeignKey(
-        risktypefield, on_delete=models.CASCADE, null=True, blank=True)
-    risk = models.ForeignKey(risk, related_name='risk_riskfields',
+        RiskTypeField, on_delete=models.CASCADE, null=True, blank=True)
+    risk = models.ForeignKey(Risk, related_name='risk_riskfields',
                              on_delete=models.CASCADE, null=True, blank=True)
 
     #

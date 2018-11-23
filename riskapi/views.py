@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import viewsets
 from rest_framework import permissions
 
-from riskapi.models import risktype, risk
+from riskapi.models import RiskType, Risk
 from riskapi.serializers import UserSerializer, RiskTypeKeySerializer, \
                                 RiskKeySerializer, RiskTypeSerializer, \
                                 RiskSerializer
@@ -21,21 +21,21 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class RiskTypeKeyViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = risktype.objects.all()
+    queryset = RiskType.objects.all()
     serializer_class = RiskTypeKeySerializer
     permission_classes = (permissions.IsAuthenticated,)
     # http_method_names = ['get']
 
 
 class RiskKeyViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = risk.objects.all()
+    queryset = Risk.objects.all()
     serializer_class = RiskKeySerializer
     permission_classes = (permissions.IsAuthenticated,)
     # http_method_names = ['get']
 
 
 class RiskTypeViewSet(viewsets.ModelViewSet):
-    queryset = risktype.objects.all()
+    queryset = RiskType.objects.all()
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('id', 'risk_type_name',)
     serializer_class = RiskTypeSerializer
@@ -47,7 +47,7 @@ class RiskTypeViewSet(viewsets.ModelViewSet):
 
 
 class RiskViewSet(viewsets.ModelViewSet):
-    queryset = risk.objects.all()
+    queryset = Risk.objects.all()
     filter_backends = (filters.DjangoFilterBackend,)
     filter_fields = ('id', 'risk_name', 'risktype',)
     serializer_class = RiskSerializer

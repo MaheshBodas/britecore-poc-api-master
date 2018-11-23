@@ -79,7 +79,7 @@ class ValidationUtils:
                   " configured as " + \
                   oRiskFieldData.risk_type_field_enum + \
                   " Enter valid string"
-        print(strErrorMessage)
+        # print(strErrorMessage)
         return strErrorMessage
 
     
