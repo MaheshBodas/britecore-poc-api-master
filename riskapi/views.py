@@ -23,14 +23,14 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 class RiskTypeKeyViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = RiskType.objects.all()
     serializer_class = RiskTypeKeySerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     # http_method_names = ['get']
 
 
 class RiskKeyViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Risk.objects.all()
     serializer_class = RiskKeySerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     # http_method_names = ['get']
 
 

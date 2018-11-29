@@ -357,6 +357,28 @@ PostResponse_RisksDict = {
     }
 }
 
+RiskTypeKeysArray = [
+    {
+        "id": 1,
+        "risk_type_name": "Automobile"
+    },
+    {
+        "id": 2,
+        "risk_type_name": "Home"
+    }
+]
+
+RiskKeysArray = [
+    {
+        "id": 1,
+        "risk_name": "Toyota 1"
+    },
+    {
+        "id": 2,
+        "risk_name": "HillView"
+    }
+]
+
 
 class SetupTypes(Enum):
     RISKTYPE = 1
@@ -687,8 +709,7 @@ class AdminUserRiskTypeTests(APITestCase, RiskApiBaseTests):
         self.assertEqual(len(response.data), 1)
         self.assertTrue(response, self.postresponsetoexpect)
 
-    def test_get_all_risk_types(self):
-        
+    def test_get_all_risk_types(self):        
         # While setting AdminUserRiskTypeTests we have posted
         # one RiskType we will post one more to test retrieving
         # multiple RiskTypes
@@ -708,6 +729,25 @@ class AdminUserRiskTypeTests(APITestCase, RiskApiBaseTests):
         # self.assertContains(response.data, self.oResponse_RiskType)
         # expected_response_json = json.dumps(self.oResponse_RiskType)
         self.assertTrue(response, oAllRiskTypePostResponsesToExpect)
+
+    #
+    def test_get_all_risk_type_keys(self):        
+        # While setting AdminUserRiskTypeTests we have posted
+        # one RiskType we will post one more to test retrieving
+        # multiple RiskTypes
+        username, password = self.userHelper.getUserPassword()
+        self.client.login(username=username, password=password)
+        
+        # risktypelist = RiskType.objects.All()
+        response = self.client.get(
+            '/risktypekeys/',
+            format="json") 
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # self.assertContains(response.data, self.oResponse_RiskType)
+        # expected_response_json = json.dumps(self.oResponse_RiskType)
+        oAllRiskTypekeysResponsesToExpect = RiskTypeKeysArray
+        self.assertTrue(response, oAllRiskTypekeysResponsesToExpect)
+    #
 
     def test_cannot_post_duplicate_risktype(self):
         # oErrorMessage = {'risk_type_name': ['risk_type_name must be unique']}
@@ -767,6 +807,25 @@ class NonAdminUserRiskTypeTests(APITestCase, RiskApiBaseTests):
             # print(res.data)
             # print(res.status_code)
             self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+
+    #
+    def test_get_all_risk_type_keys(self):
+        # self.client.login(username=username, password=password)
+        new_client = APIClient()
+        oSetUserHelper = SetUserHelper(SetupUser.NONADMIN)
+        username, password = oSetUserHelper.getUserPassword()
+        new_client.login(username=username, password=password)
+        # risktypelist = RiskType.objects.All()
+        response = new_client.get(
+            '/risktypekeys/',
+            format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # self.assertContains(response.data, self.oResponse_RiskType)
+        # expected_response_json = json.dumps(self.oResponse_RiskType)
+        oAllRiskTypekeysResponsesToExpect = RiskTypeKeysArray
+        self.assertTrue(response, oAllRiskTypekeysResponsesToExpect)
+    #
+    #
 
 
 # Admin Risk test
@@ -828,6 +887,23 @@ class AdminUserRiskTests(APITestCase, RiskApiBaseTests):
         # expected_response_json = json.dumps(self.oResponse_RiskType)
         self.assertTrue(response, oAllRiskPostResponsesToExpect)
 
+    def test_get_all_risk_keys(self):        
+        # While setting AdminUserRiskTypeTests we have posted
+        # one RiskType we will post one more to test retrieving
+        # multiple RiskTypes
+        username, password = self.userHelper.getUserPassword()
+        self.client.login(username=username, password=password)
+        
+        # risktypelist = RiskType.objects.All()
+        response = self.client.get(
+            '/riskkeys/',
+            format="json") 
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # self.assertContains(response.data, self.oResponse_RiskType)
+        # expected_response_json = json.dumps(self.oResponse_RiskType)
+        oAllRiskkeysResponsesToExpect = RiskKeysArray
+        self.assertTrue(response, oAllRiskkeysResponsesToExpect)
+
     def test_cannot_post_duplicate_risktype(self):
         # oErrorMessage = {'risk_type_name': ['risk_type_name must be unique']}
         oTestRisk = TestRisk('Having_DuplicateRiskName')
@@ -877,7 +953,7 @@ class NonAdminUserRiskTests(APITestCase, RiskApiBaseTests):
 
     def test_nonadmin_can_post_risk_type(self):
         new_client = APIClient()
-        oSetUserHelper = SetUserHelper(SetupUser.NONADMIN) 
+        oSetUserHelper = SetUserHelper(SetupUser.NONADMIN)
         username, password = oSetUserHelper.getUserPassword()
         new_client.login(username=username, password=password)
 
@@ -898,9 +974,9 @@ class NonAdminUserRiskTests(APITestCase, RiskApiBaseTests):
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         # self.assertEqual(RiskType.objects.count(), 1)
 
-    def test_nonadmin_can_get_risktypes(self):
+    def test_nonadmin_can_get_risks(self):
         new_client = APIClient()
-        oSetUserHelper = SetUserHelper(SetupUser.NONADMIN)          
+        oSetUserHelper = SetUserHelper(SetupUser.NONADMIN)      
         username, password = oSetUserHelper.getUserPassword()
         new_client.login(username=username, password=password)
         res = new_client.get(
@@ -909,3 +985,18 @@ class NonAdminUserRiskTests(APITestCase, RiskApiBaseTests):
         # risklist = Risk.objects.get(id=1)
         # self.assertEqual(len(risklist), 1)
         self.assertEqual(Risk.objects.count(), 1)
+
+    def test_get_all_risk_keys(self):
+        # self.client.login(username=username, password=password)
+        new_client = APIClient()
+        oSetUserHelper = SetUserHelper(SetupUser.NONADMIN)
+        username, password = oSetUserHelper.getUserPassword()
+        new_client.login(username=username, password=password)
+        response = new_client.get(
+            '/riskkeys/',
+            format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # self.assertContains(response.data, self.oResponse_RiskType)
+        # expected_response_json = json.dumps(self.oResponse_RiskType)
+        oAllRiskkeysResponsesToExpect = RiskTypeKeysArray
+        self.assertTrue(response, oAllRiskkeysResponsesToExpect)
