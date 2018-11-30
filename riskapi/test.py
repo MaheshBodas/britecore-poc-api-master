@@ -379,6 +379,30 @@ RiskKeysArray = [
     }
 ]
 
+AdminUserQueryResult = [
+    {
+        "password": "pbkdf2_sha256$100000$HX18m0pY5guH$kDdhbHL/6Dw+avdowDYTIP1HhHE8knLdSwYFolDIsJE=",
+        "username": "mahesh.bodas",
+        "email": "mahesh.bodas@gmail.com",
+        "is_staff": True,
+        "is_superuser": True,
+        "is_active": True,
+        "date_joined": "2018-11-21T10:03:27.146833Z"
+    }
+]
+
+NonAdminUserQueryResult = [
+    {
+        "password": "pbkdf2_sha256$100000$WLtBTFMjr9NM$zhzbOrPIMejVBfA7LN9PM+hko/KvfyOYWjvtGDHUYd8=",
+        "username": "editor",
+        "email": "",
+        "is_staff": False,
+        "is_superuser": False,
+        "is_active": True,
+        "date_joined": "2018-11-29T19:06:58Z"
+    }
+]
+
 
 class SetupTypes(Enum):
     RISKTYPE = 1
@@ -729,8 +753,7 @@ class AdminUserRiskTypeTests(APITestCase, RiskApiBaseTests):
         # self.assertContains(response.data, self.oResponse_RiskType)
         # expected_response_json = json.dumps(self.oResponse_RiskType)
         self.assertTrue(response, oAllRiskTypePostResponsesToExpect)
-
-    #
+    
     def test_get_all_risk_type_keys(self):        
         # While setting AdminUserRiskTypeTests we have posted
         # one RiskType we will post one more to test retrieving
@@ -747,8 +770,24 @@ class AdminUserRiskTypeTests(APITestCase, RiskApiBaseTests):
         # expected_response_json = json.dumps(self.oResponse_RiskType)
         oAllRiskTypekeysResponsesToExpect = RiskTypeKeysArray
         self.assertTrue(response, oAllRiskTypekeysResponsesToExpect)
-    #
 
+    def test_can_get_user_details(self):        
+        # While setting AdminUserRiskTypeTests we have posted
+        # one RiskType we will post one more to test retrieving
+        # multiple RiskTypes
+        username, password = self.userHelper.getUserPassword()
+        self.client.login(username=username, password=password)
+        
+        # risktypelist = RiskType.objects.All()
+        response = self.client.get(
+            '/users/?username=' + username,
+            format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # self.assertContains(response.data, self.oResponse_RiskType)
+        # expected_response_json = json.dumps(self.oResponse_RiskType)
+        oAdminUserQueryResult = AdminUserQueryResult
+        self.assertTrue(response, oAdminUserQueryResult)
+    
     def test_cannot_post_duplicate_risktype(self):
         # oErrorMessage = {'risk_type_name': ['risk_type_name must be unique']}
         oTestRiskType = TestRiskType('Having_DuplicateRiskTypeName')
@@ -824,8 +863,22 @@ class NonAdminUserRiskTypeTests(APITestCase, RiskApiBaseTests):
         # expected_response_json = json.dumps(self.oResponse_RiskType)
         oAllRiskTypekeysResponsesToExpect = RiskTypeKeysArray
         self.assertTrue(response, oAllRiskTypekeysResponsesToExpect)
-    #
-    #
+
+    def test_can_get_user_details(self):        
+        new_client = APIClient()
+        oSetUserHelper = SetUserHelper(SetupUser.NONADMIN)
+        username, password = oSetUserHelper.getUserPassword()
+        new_client.login(username=username, password=password)
+        
+        # risktypelist = RiskType.objects.All()
+        response = self.client.get(
+            '/users/?username=' + username,
+            format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # self.assertContains(response.data, self.oResponse_RiskType)
+        # expected_response_json = json.dumps(self.oResponse_RiskType)
+        oNonAdminUserQueryResult = NonAdminUserQueryResult
+        self.assertTrue(response, oNonAdminUserQueryResult)
 
 
 # Admin Risk test
